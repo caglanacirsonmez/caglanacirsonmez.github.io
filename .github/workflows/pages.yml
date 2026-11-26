@@ -29,6 +29,13 @@ jobs:
           for js in Path('_site/mayanin-zaman-kapsulu/assets').glob('*.js'):
               text=js.read_text()
               js.write_text(text.replace('this.send(', 'this.send.call(globalThis,'))
+          index=Path('_site/mayanin-zaman-kapsulu/index.html')
+          html=index.read_text()
+          for js in Path('_site/mayanin-zaman-kapsulu/assets').glob('*.js'):
+              renamed=js.with_name(js.stem+'-drivefix.js')
+              html=html.replace(js.name, renamed.name)
+              js.rename(renamed)
+          index.write_text(html)
           PY
       - uses: actions/upload-pages-artifact@v4
         with:
