@@ -26,6 +26,9 @@ jobs:
           if "'Content-Security-Policy':'sandbox'" not in s:
               s=s.replace("'X-Content-Type-Options':'nosniff'", "'X-Content-Type-Options':'nosniff','Content-Security-Policy':'sandbox'")
           p.write_text(s)
+          for js in Path('_site/mayanin-zaman-kapsulu/assets').glob('*.js'):
+              text=js.read_text()
+              js.write_text(text.replace('this.send(', 'this.send.call(globalThis,'))
           PY
       - uses: actions/upload-pages-artifact@v4
         with:
@@ -34,11 +37,3 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - uses: actions/deploy-pages@v4
-        id: deployment
